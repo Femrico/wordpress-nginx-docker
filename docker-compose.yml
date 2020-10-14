@@ -45,10 +45,17 @@ services:
       - wordpress
     restart: always
 
-  adminer:
-    image: adminer
-    restart: always
-    links:
-      - mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    volumes:
+      - ./config/phpmyadmin.conf.ini:/usr/local/etc/php/conf.d/phpmyadmin.ini
+    environment:
+      PMA_HOST: "${WORDPRESS_DB_HOST:-mysql}"
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-password}"
     ports:
-      - 8080:8080
+      - '8080:80'
+    links:
+      - mysql:mysql
