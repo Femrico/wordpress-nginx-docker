@@ -30,7 +30,7 @@ services:
     restart: always
 
   nginx:
-    image: nginx:${NGINX_VERSION:-latest}
+    image: pagespeed/nginx-pagespeed:1.13.35.2
     container_name: nginx
     ports:
       - '80:80'
