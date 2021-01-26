@@ -40,7 +40,36 @@ server {
     ssl_certificate           /etc/letsencrypt/live/FQDN_OR_IP/fullchain.pem;
     ssl_certificate_key       /etc/letsencrypt/live/FQDN_OR_IP/privkey.pem;
     ssl_trusted_certificate   /etc/letsencrypt/live/FQDN_OR_IP/chain.pem;
+    
+    
+    # Cache Control Headers
+    location ~* \.(?:ico|jpg|jpeg|png|gif|js|css|html|mp4|svg|woff2|webp|pdf|webm)$ {
+        add_header Cache-Control "public, max-age=31536000";
+    }
 
+    # Block Sensitive Files
+    location ~ /\.(?!well-known).* { deny all; }
+    location = /xmlrpc.php { deny all; }
+    location = /wp-config.php { deny all; }
+
+    # PageSpeed Module Enabling
+    pagespeed on;
+    pagespeed FileCachePath /var/ngx_pagespeed_cache;
+    location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" {
+        add_header "" "";
+    }
+    location ~ "^/pagespeed_static/" { }
+    location ~ "^/ngx_pagespeed_beacon$" { }
+
+    #PageSpeed Module Config
+    pagespeed RewriteLevel PassThrough;
+    pagespeed ImageRecompressionQuality 75;
+    pagespeed EnableFilters recompress_images;
+    pagespeed EnableFilters rewrite_images;
+    pagespeed EnableFilters combine_css;
+
+
+    # Standard Config
     location / {
         try_files $uri $uri/ /index.php?$args;
     }
